@@ -103,6 +103,18 @@ static void XMLCALL start(void *data, const char *element, const char **attribut
 		if (seq++ % 100000 == 0) {
 			fprintf(stderr, "node %u  \r", n.id);
 		}
+	} else if (strcmp(element, "changeset") == 0) {
+		if (seq++ % 100000 == 0) {
+			unsigned int id = 0;
+			int i;
+			for (i = 0; attribute[i] != NULL; i += 2) {
+				if (strcmp(attribute[i], "id") == 0) {
+					id = atoi(attribute[i + 1]);
+				}
+			}
+
+			fprintf(stderr, "changeset %u  \r", id);
+		}
 	} else if (strcmp(element, "way") == 0) {
 		if (map == NULL) {
 			fflush(tmp);
