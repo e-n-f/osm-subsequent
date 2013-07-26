@@ -1,4 +1,4 @@
-osm-snap
-========
+osm-subsequent
+==============
 
-Flattens the ways from OpenStreetMap XML into datamaps format.
+Finds subsequent changes to nodes/ways edited by particular users.
