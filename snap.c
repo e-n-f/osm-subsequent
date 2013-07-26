@@ -10,8 +10,6 @@
 #include <math.h>
 #include <time.h>
 
-#define WANT_USER "woodpeck"
-
 // boilerplate from
 // http://marcomaggi.github.io/docs/expat.html#overview-intro
 // Copyright 1999, Clark Cooper
@@ -20,6 +18,9 @@
 
 long long seq = 0;
 int within = 0;
+
+char **users = NULL;
+int nusers;
 
 void quote(const char *s) {
 	for (; *s; s++) {
@@ -45,8 +46,13 @@ static void XMLCALL start(void *data, const char *element, const char **attribut
 			if (strcmp(attribute[i], "id") == 0) {
 				id = atoll(attribute[i + 1]);
 			} else if (strcmp(attribute[i], "user") == 0) {
-				if (strcmp(attribute[i + 1], WANT_USER) == 0) {
-					want = 1;
+				int j;
+
+				for (j = 0; j < nusers; j++) {
+					if (strcmp(attribute[i + 1], users[j]) == 0) {
+						want = 1;
+						break;
+					}
 				}
 			}
 		}
@@ -118,6 +124,14 @@ static void XMLCALL end(void *data, const char *el) {
 }
 
 int main(int argc, char *argv[]) {
+	users = argv + 1;
+	nusers = argc - 1;
+
+	if (nusers <= 0) {
+		fprintf(stderr, "Usage: %s user ...\n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
 	XML_Parser p = XML_ParserCreate(NULL);
 	if (p == NULL) {
 		fprintf(stderr, "Couldn't allocate memory for parser\n");
@@ -148,5 +162,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	XML_ParserFree(p);
+
+	printf("</osm>\n");
 	return 0;
 }
