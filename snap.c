@@ -111,15 +111,12 @@ static void XMLCALL start(void *data, const char *element, const char **attribut
 	}
 }
 
-#define MAX 10
-
 static void XMLCALL end(void *data, const char *el) {
 	if (within) {
 		if (strcmp(el, "way") == 0 || strcmp(el, "node") == 0) {
 			printf("	</%s>\n", el);
+			within = 0;
 		}
-
-		within = 0;
 	}
 }
 
