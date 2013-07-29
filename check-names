@@ -23,17 +23,6 @@ while (<>) {
 			$name{$id}{1} = $name;
 		}
 
-		if ($highway) {
-			if ($user{$id}{1} eq $look) {
-				if ($name{$id}{1} eq "") {
-					if ($name ne "") {
-						if ($user ne $look) {
-							print "name for $id was empty edited by $user in $version now $name\n";
-						}
-					}
-				}
-			}
-		}
 
 		$maxversion{$id} = $version;
 
@@ -69,6 +58,18 @@ while (<>) {
 	}
 }
 
-for $way (keys(%maxversion)) {
+for $id (keys(%maxversion)) {
+	$version = $maxversion{$id};
 
+	if ($highway{$id}{$version}) {
+		if ($user{$id}{1} eq $look) {
+			if ($name{$id}{1} eq "") {
+				if ($name{$id}{$version} ne "") {
+					if ($user{$id}{$version} ne $look) {
+						print "name for $id was empty edited by $user{$id}{$version} in $version now $name{$id}{$version}\n";
+					}
+				}
+			}
+		}
+	}
 }
