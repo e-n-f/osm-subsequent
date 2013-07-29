@@ -23,7 +23,6 @@ while (<>) {
 			$name{$id}{1} = $name;
 		}
 
-
 		$maxversion{$id} = $version;
 
 		$id = 0;
@@ -58,6 +57,7 @@ while (<>) {
 	}
 }
 
+ID:
 for $id (keys(%maxversion)) {
 	$version = $maxversion{$id};
 
@@ -67,9 +67,12 @@ for $id (keys(%maxversion)) {
 				if ($name{$id}{$version} ne "") {
 					if ($user{$id}{$version} ne $look) {
 						print "name for $id was empty edited by $user{$id}{$version} in $version now $name{$id}{$version}\n";
+						next ID;
 					}
 				}
 			}
 		}
+
+		print "name for $id always empty\n";
 	}
 }
