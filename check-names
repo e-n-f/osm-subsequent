@@ -70,9 +70,9 @@ for $id (keys(%maxversion)) {
 						next ID;
 					}
 				}
+
+				print "name for $id always empty $user{$id}{1} $name{$id}{1}\n";
 			}
 		}
-
-		print "name for $id always empty\n";
 	}
 }
