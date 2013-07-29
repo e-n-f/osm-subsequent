@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+$foot = .00000274;
+$bucket = 5280 * $foot;
+$pi = 4 * atan2(1, 1);
+
 $id = 0;
 $version = 0;
 $highway = 0;
@@ -24,12 +28,14 @@ while (<>) {
 		}
 
 		$maxversion{$id} = $version;
+		$ref{$id} = $ref;
 
 		$id = 0;
 		$version = 0;
 		$highway = 0;
 		$name = "";
 		$user = "";
+		$ref = "";
 	}
 
 	if (/<way/) {
@@ -41,6 +47,37 @@ while (<>) {
 		}
 		if (/ user="([^"]*)"/) {
 			$user = $1;
+		}
+	}
+
+	if (/<node/) {
+		$id = $lat = $lon = "";
+
+		if (/ id="([0-9]*)"/) {
+			$id = $1;
+		}
+		if (/ lat="([0-9.-]*)"/) {
+			$lat = $1;
+		}
+		if (/ lon="([0-9.-]*)"/) {
+			$lon = $1;
+		}
+
+		if ($lat ne "") {
+			$lat = int($lat / $bucket) * $bucket;
+			$rat = cos($lat * $pi / 180);
+			$lon = int($lon / ($bucket / $rat)) * ($bucket / $rat);
+
+			$lat{$id} = $lat;
+			$lon{$id} = $lon;
+		}
+	}
+
+	if (/<nd/) {
+		if (/ ref="([0-9]*)"/) {
+			if ($lat{$1} ne "") {
+				$ref = $1;
+			}
 		}
 	}
 
@@ -66,12 +103,12 @@ for $id (keys(%maxversion)) {
 			if ($name{$id}{1} eq "") {
 				if ($name{$id}{$version} ne "") {
 					if ($user{$id}{$version} ne $look) {
-						print "name for $id was empty edited by $user{$id}{$version} in $version now $name{$id}{$version}\n";
+						print "name for $id $lat{$ref{$id}},$lon{$ref{$id}} was empty edited by $user{$id}{$version} in $version now $name{$id}{$version}\n";
 						next ID;
 					}
 				}
 
-				print "name for $id always empty $user{$id}{1} $name{$id}{1}\n";
+				print "name for $id $lat{$ref{$id}},$lon{$ref{$id}} always empty $user{$id}{1} $name{$id}{1}\n";
 			}
 		}
 	}
