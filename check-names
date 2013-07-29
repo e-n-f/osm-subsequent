@@ -1,0 +1,74 @@
+#!/usr/bin/perl
+
+$id = 0;
+$version = 0;
+$highway = 0;
+$name = "";
+$user = "";
+
+if ($#ARGV < 0) {
+	die "Usage: $0 user\n";
+}
+
+$look = $ARGV[0];
+shift @ARGV;
+
+while (<>) {
+	if (/<\/way>/) {
+		$user{$id}{$version} = $user;
+		$highway{$id}{$version} = $highway;
+		$name{$id}{$version} = $name;
+
+		if ($name ne "" && $user eq $look) {
+			$name{$id}{1} = $name;
+		}
+
+		if ($highway) {
+			if ($user{$id}{1} eq $look) {
+				if ($name{$id}{1} eq "") {
+					if ($name ne "") {
+						if ($user ne $look) {
+							print "name for $id was empty edited by $user in $version now $name\n";
+						}
+					}
+				}
+			}
+		}
+
+		$maxversion{$id} = $version;
+
+		$id = 0;
+		$version = 0;
+		$highway = 0;
+		$name = "";
+		$user = "";
+	}
+
+	if (/<way/) {
+		if (/ id="([0-9]*)"/) {
+			$id = $1;
+		}
+		if (/ version="([0-9]*)"/) {
+			$version = $1;
+		}
+		if (/ user="([^"]*)"/) {
+			$user = $1;
+		}
+	}
+
+	if (/<tag/) {
+		if (/k="highway"/) {
+			$highway = 1;
+		}
+
+		if (/k="name"/) {
+			if (/v="([^"]*)"/) {
+				$name = $1;
+			}
+		}
+	}
+}
+
+for $way (keys(%maxversion)) {
+
+}
