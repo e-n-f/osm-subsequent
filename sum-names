@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+$foot = .00000274;
+$bucket = 30 * 5280 * $foot;
+$pi = 4 * atan2(1, 1);
+
+LINE:
+while (<>) {
+	next unless /was empty/;
+
+	($name, $for, $node, $where) = split(/ /);
+
+	($lat, $lon) = split(/,/, $where);
+	next if $lat == 0;
+
+	for ($i = 0; $i <= $#lats; $i++) {
+		$latd = $lat - $lats[$i];	
+		$lond = ($lon - $lons[$i]) * cos($lat * $pi / 180);
+
+		$d = sqrt($latd * $latd + $lond * $lond);
+
+		if ($d < $bucket) {
+			$lats[$i] = ($lats[$i] * $count[$i] + $lat) / ($count[$i] + 1);
+			$lons[$i] = ($lons[$i] * $count[$i] + $lon) / ($count[$i] + 1);
+			$count[$i]++;
+			next LINE;
+		}
+	}
+
+	push @lats, $lat;
+	push @lons, $lon;
+	push @count, 1;
+}
+
+for ($i = 0; $i <= $#lats; $i++) {
+	printf("%d ", $count[$i]);
+	print "http://www.openstreetmap.org/?lat=$lats[$i]&lon=$lons[$i]&zoom=15<br>\n";
+}

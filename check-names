@@ -64,9 +64,11 @@ while (<>) {
 		}
 
 		if ($lat ne "") {
-			$lat = int($lat / $bucket) * $bucket;
-			$rat = cos($lat * $pi / 180);
-			$lon = int($lon / ($bucket / $rat)) * ($bucket / $rat);
+			if (0) {
+				$lat = int($lat / $bucket) * $bucket;
+				$rat = cos($lat * $pi / 180);
+				$lon = int($lon / ($bucket / $rat)) * ($bucket / $rat);
+			}
 
 			$lat{$id} = $lat;
 			$lon{$id} = $lon;
