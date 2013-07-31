@@ -19,16 +19,18 @@ shift @ARGV;
 
 while (<>) {
 	if (/<\/way>/) {
-		$user{$id}{$version} = $user;
-		$highway{$id}{$version} = $highway;
-		$name{$id}{$version} = $name;
+		if ($version != 1 || ($date ge "2012-03-01" && $date le "2012-07-02")) {
+			$user{$id}{$version} = $user;
+			$highway{$id}{$version} = $highway;
+			$name{$id}{$version} = $name;
 
-		if ($name ne "" && $user eq $look) {
-			$name{$id}{1} = $name;
+			if ($name ne "" && $user eq $look) {
+				$name{$id}{1} = $name;
+			}
+
+			$maxversion{$id} = $version;
+			$ref{$id} = $ref;
 		}
-
-		$maxversion{$id} = $version;
-		$ref{$id} = $ref;
 
 		$id = 0;
 		$version = 0;
@@ -36,6 +38,7 @@ while (<>) {
 		$name = "";
 		$user = "";
 		$ref = "";
+		$date = "";
 	}
 
 	if (/<way/) {
@@ -47,6 +50,9 @@ while (<>) {
 		}
 		if (/ user="([^"]*)"/) {
 			$user = $1;
+		}
+		if (/ timestamp="([^"]*)"/) {
+			$date = $1;
 		}
 	}
 
