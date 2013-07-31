@@ -10,6 +10,11 @@ while (<>) {
 
 	($name, $for, $node, $where) = split(/ /);
 
+	$who = "";
+	if (/edited by (.*) in /) {
+		$who = $1;
+	}
+
 	($lat, $lon) = split(/,/, $where);
 	next if $lat == 0;
 
@@ -23,6 +28,7 @@ while (<>) {
 			$lats[$i] = ($lats[$i] * $count[$i] + $lat) / ($count[$i] + 1);
 			$lons[$i] = ($lons[$i] * $count[$i] + $lon) / ($count[$i] + 1);
 			$count[$i]++;
+			$who{$i}{$who}++;
 			next LINE;
 		}
 	}
@@ -30,9 +36,19 @@ while (<>) {
 	push @lats, $lat;
 	push @lons, $lon;
 	push @count, 1;
+	$who{$#lats}{$who}++;
 }
 
 for ($i = 0; $i <= $#lats; $i++) {
 	printf("%d ", $count[$i]);
-	print "http://www.openstreetmap.org/?lat=$lats[$i]&lon=$lons[$i]&zoom=15<br>\n";
+	print "http://www.openstreetmap.org/?lat=$lats[$i]&lon=$lons[$i]&zoom=15 ";
+
+	%whos = %{$who{$i}};
+	@whos = sort { $whos{$b} <=> $whos{$a} } keys(%whos);
+
+	for $who (@whos) {
+		print "$who ($whos{$who}) ";
+	}
+
+	print "<br>\n";
 }
