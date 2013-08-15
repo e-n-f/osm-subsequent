@@ -28,6 +28,11 @@ while (<>) {
 				$name{$id}{1} = $name;
 			}
 
+			if ($name eq "" && $name{$id}{$maxversion{$id}} ne "") {
+				# print STDERR "$id was named in $maxversion{$id} not $version\n";
+				$maxversion{$id} = $version;
+			}
+
 			if ($maxversion{$id} eq "" || $name{$id}{$maxversion{$id}} eq "") {
 				$maxversion{$id} = $version;
 			}
