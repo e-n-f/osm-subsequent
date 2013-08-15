@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use URI::Escape;
+
 $foot = .00000274;
 $bucket = 30 * 5280 * $foot;
 $pi = 4 * atan2(1, 1);
@@ -40,15 +42,17 @@ while (<>) {
 }
 
 for ($i = 0; $i <= $#lats; $i++) {
-	printf("%d ", $count[$i]);
-	print "http://www.openstreetmap.org/?lat=$lats[$i]&lon=$lons[$i]&zoom=15 ";
+	printf("%d | ", $count[$i]);
+	print "[xxx](http://www.openstreetmap.org/?lat=$lats[$i]&lon=$lons[$i]&zoom=15) | ";
 
 	%whos = %{$who{$i}};
 	@whos = sort { $whos{$b} <=> $whos{$a} } keys(%whos);
 
 	for $who (@whos) {
-		print "$who ($whos{$who}) ";
+		$who2 = uri_escape($who);
+
+		print "[$who](http://openstreetmap.org/user/$who2) ($whos{$who}) ";
 	}
 
-	print "<br>\n";
+	print "\n";
 }
